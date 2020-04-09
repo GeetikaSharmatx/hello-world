@@ -9,7 +9,7 @@ jobs:
     environment:
     # - SHORT_SHA: $(echo $CIRCLE_SHA1 | cut -b1-7)
     - TAG_NAME: "branch-$CIRCLE_BRANCH"
-    - IMAGE_PATH: "geetikasharma7/hellowhale"
+    - IMAGE_PATH: "geetikasharma7/hello-world"
     # - KC_ADMIN_USERNAME: "circleci"
     steps:
     - checkout
