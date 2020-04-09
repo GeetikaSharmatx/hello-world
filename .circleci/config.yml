@@ -33,5 +33,5 @@ workflows:
           resource-name: "deployment/helloworld-deployment"
           container-image-updates: "helloworld=$IMAGE_PATH:${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM}"
           record: true
-          requires:
-            - build_test_push
+          # requires:
+          #   - build_test_push
