@@ -1,13 +1,28 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
 orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
-# Orchestrate or schedule a set of jobs
+  aws-eks: circleci/aws-eks@x.y
+  kubernetes: circleci/kubernetes@0.4.0
+jobs:
+  build_test_push:
+    docker:
+    - image: circleci/node:10.9
+    environment:
+    # - SHORT_SHA: $(echo $CIRCLE_SHA1 | cut -b1-7)
+    - TAG_NAME: "branch-$CIRCLE_BRANCH"
+    - IMAGE_PATH: "geetikasharma7/hellowhale"
+    # - KC_ADMIN_USERNAME: "circleci"
+    steps:
+    - checkout
+    - setup_remote_docker:
+        docker_layer_caching: false
+    - run:
+        name: Build Docker Image
+        command: 'docker build -t $IMAGE_PATH:$CIRCLE_BUILD_NUM .'
+    - run:
+        name: Push Docker Image
+        command: 'if  [ "$CIRCLE_BRANCH" == "development" ] ||  [ "$CIRCLE_BRANCH" == "master" ] || [ "$CIRCLE_BRANCH" == "production" ] ; then  bash ~/project/.circleci/deploy.sh; fi'
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+  version: 2
+  build_test_push:
     jobs:
-      - welcome/run
+    - build_test_push
