@@ -23,16 +23,13 @@ jobs:
         command: 'if  [ "$CIRCLE_BRANCH" == "development" ] ||  [ "$CIRCLE_BRANCH" == "master" ] || [ "$CIRCLE_BRANCH" == "production" ] ; then  bash ~/project/.circleci/deploy.sh; fi'
 workflows:
   version: 2
-  build_test_push:
-    jobs:
-    - build_test_push
   deployment:
     jobs:
+      - build_test_push
       - aws-eks/update-container-image:
           cluster-name: testCircleci
           resource-name: "deployment/helloworld-deployment"
           container-image-updates: "helloworld=$IMAGE_PATH:${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM}"
           record: true
-          # requires:
-          #   - build_test_push
-          
+          requires:
+             - build_test_push
