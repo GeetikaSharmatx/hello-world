@@ -31,5 +31,7 @@ workflows:
       - aws-eks/update-container-image:
           cluster-name: testCircleci
           resource-name: "deployment/helloworld-deployment"
-          container-image-updates: "helloworld-deployment=helloworld-deployment:${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM}"
+          container-image-updates: "helloworld=$IMAGE_PATH:${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM}"
           record: true
+          requires:
+            - build_test_push
