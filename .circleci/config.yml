@@ -28,7 +28,7 @@ workflows:
       - build_test_push
       - aws-eks/update-container-image:
           cluster-name: testCircleCi
-          resource-name: "deployment/helloworld-deployment"
+          resource-name: "deployment/helloworld-deployment2"
           container-image-updates: "helloworld=geetikasharma7/hello-world:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}"
           record: true
           requires:
