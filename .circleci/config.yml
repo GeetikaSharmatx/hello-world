@@ -33,7 +33,7 @@ jobs:
     - image: circleci/node:10.9
     steps:
     - slack/status:
-        message: "Custom Message"
+        mentions: 'U011D4UUF6K'
         channel: C011D4UUJH5
 
 workflows:
