@@ -2,7 +2,6 @@ version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@0.2.7
   kubernetes: circleci/kubernetes@0.4.0
-  slack: circleci/slack@3.4.1
 jobs:
   build_test_push:
     docker:
@@ -22,20 +21,6 @@ jobs:
     - run:
         name: Push Docker Image
         command: 'if  [ "$CIRCLE_BRANCH" == "development" ] ||  [ "$CIRCLE_BRANCH" == "master" ] || [ "$CIRCLE_BRANCH" == "production" ] ; then  bash ~/project/.circleci/deploy.sh; fi'
-    - slack/notify:
-        color: '#42e2f4'
-        mentions: 'U011D4UUF6K'
-        message: "Built Docker Image for $CIRCLE_BRANCH. hello-world:${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM} will be deployed on EKS Cluster in few seconds."
-        channel: C011D4UUJH5
-
-  build_status:
-    docker:
-    - image: circleci/node:10.9
-    steps:
-    - slack/status:
-        mentions: 'U011D4UUF6K'
-        channel: C011D4UUJH5
-
 workflows:
   version: 2
   deployment:
@@ -48,4 +33,3 @@ workflows:
           record: true
           requires:
              - build_test_push
-      - build_status
