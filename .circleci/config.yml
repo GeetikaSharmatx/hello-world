@@ -23,21 +23,23 @@ jobs:
         command: 'if  [ "$CIRCLE_BRANCH" == "development" ] ||  [ "$CIRCLE_BRANCH" == "master" ] || [ "$CIRCLE_BRANCH" == "production" ] ; then  bash ~/project/.circleci/deploy.sh; fi'
   deploy:
     docker: 
-    - image: circleci/golang:1.10
+    - image: circleci/python:3.7
     steps: 
-    - checkout
     - run: 
         name: Install AWS cli
-        command: export TZ=Europe/Minsk && sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > sudo  /etc/timezone && sudo apt-get update && sudo apt-get install -y awscli
+        command: sudo pip3 install awscli
     - run:
         name: Install and confgure kubectl
-        command: sudo curl -L https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && sudo chmod +x /usr/local/bin/kubectl  
+        command: |
+            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
     - run:
         name: Install and confgure kubectl aws-iam-authenticator
-        command: curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/aws-iam-authenticator && sudo chmod +x ./aws-iam-authenticator && sudo cp ./aws-iam-authenticator /bin/aws-iam-authenticator
-    - run:
-        name: Install latest awscli version
-        command: sudo apt install unzip && curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && unzip awscli-bundle.zip &&./awscli-bundle/install -b ~/bin/aws
+        command: |
+            curl -o aws-iam-authenticator curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator
+            chmod +x ./aws-iam-authenticator
+            sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
     - run:
         name: Set kubernetes cluster variables w.r.t branch
         command: |
@@ -54,6 +56,7 @@ jobs:
         name: Get the kubeconfig file 
         # command: export KUBECONFIG=$HOME/.kube/kubeconfig && /home/circleci/bin/aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
         command: aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+        
     - run:
         name: Update the kubernetes image
         command: kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
