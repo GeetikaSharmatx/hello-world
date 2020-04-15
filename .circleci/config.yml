@@ -57,7 +57,7 @@ jobs:
           fi
     - run:
         name: Configure
-        command: aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION} --alias ${EKS_CLUSTER_NAME}
+        command: aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region us-east-2 --alias ${EKS_CLUSTER_NAME}
 
     - run:
         name: Update the kubernetes image
