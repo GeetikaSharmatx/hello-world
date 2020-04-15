@@ -55,8 +55,10 @@ jobs:
     - run:
         name: Get the kubeconfig file 
         # command: export KUBECONFIG=$HOME/.kube/kubeconfig && /home/circleci/bin/aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-        command: aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-        
+        command: |
+            aws --version
+            aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+
     - run:
         name: Update the kubernetes image
         command: kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
