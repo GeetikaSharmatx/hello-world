@@ -44,7 +44,7 @@ jobs:
             chmod +x ./aws-iam-authenticator
             sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
     - run:
-        name: Deploy kubernetes cluster variables w.r.t branch
+        name: Set kubernetes cluster variables w.r.t branch
         command: |
           if [ "$CIRCLE_BRANCH" == "master" ]
           then 
@@ -57,7 +57,8 @@ jobs:
           fi
           aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region us-east-2 --alias ${EKS_CLUSTER_NAME}
           kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
-   workflows:
+    
+workflows:
   version: 2
   deployment:
     jobs:
