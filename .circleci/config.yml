@@ -56,9 +56,8 @@ jobs:
             export REPOSITORY_NAME="hello-world"
           fi
     - run:
-        name: Get the kubeconfig file 
-        # command: export KUBECONFIG=$HOME/.kube/kubeconfig && /home/circleci/bin/aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-        command: aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+        name: Configure
+        command: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION --alias $EKS_CLUSTER_NAME
 
     - run:
         name: Update the kubernetes image
