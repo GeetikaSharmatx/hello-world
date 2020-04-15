@@ -48,7 +48,6 @@ jobs:
     - slack/notify:
         channel: C011D4UUJH5
         color: '#42e2f4'
-        title: "helloworld"
         message: "Deploying ${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM} on Test Environment"
     - run:
         name: Deploy to Test Environment
