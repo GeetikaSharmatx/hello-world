@@ -61,7 +61,7 @@ workflows:
   deployment:
     jobs:
       - build_test_push
-      - deploy:
+      - deploy_to_test_cluster:
           requires:
              - build_test_push
           filters:
