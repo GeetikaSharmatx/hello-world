@@ -53,7 +53,7 @@ jobs:
         name: Deploy to Test Environment
         command: |
           export AWS_REGION="us-east-2"
-          export EKS_CLUSTER_NAME="testCircleCi2"
+          export EKS_CLUSTER_NAME="testCircleCi"
           export DEPLOYMENT="helloworld-deployment"
           export CONTAINER="helloworld"
           export DOCKERHUB_ACCOUNT_NAME="geetikasharma7"
