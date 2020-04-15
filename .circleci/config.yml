@@ -57,7 +57,7 @@ jobs:
         # command: export KUBECONFIG=$HOME/.kube/kubeconfig && /home/circleci/bin/aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
         command: |
             aws_version=`aws --version`
-            echo $aws_version
+            echo ${aws_version}
             aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
 
     - run:
