@@ -46,9 +46,9 @@ jobs:
             chmod +x ./aws-iam-authenticator
             sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
     - slack/notify:
-          channel: C011D4UUJH5
-          color: '#42e2f4'
-          message: "Deploying ${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM} on Test Environment"
+        channel: C011D4UUJH5
+        color: '#42e2f4'
+        message: "Deploying ${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM} on Test Environment"
     - run:
         name: Deploy to Test Environment
         command: |
@@ -61,6 +61,8 @@ jobs:
           aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region us-east-2 --alias ${EKS_CLUSTER_NAME}
           kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
     - slack/status:
+        channel: C011D4UUJH5
+        include_project_field: true
         
 
 workflows:
