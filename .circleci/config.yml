@@ -21,7 +21,8 @@ jobs:
     - run:
         name: Push Docker Image
         command: 'if  [ "$CIRCLE_BRANCH" == "development" ] ||  [ "$CIRCLE_BRANCH" == "master" ] || [ "$CIRCLE_BRANCH" == "production" ] ; then  bash ~/project/.circleci/deploy.sh; fi'
-  deploy:
+
+  deploy_to_test_cluster:
     docker: 
     - image: circleci/python:3.7
     steps: 
@@ -44,20 +45,17 @@ jobs:
             chmod +x ./aws-iam-authenticator
             sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
     - run:
-        name: Set kubernetes cluster variables w.r.t branch
+        name: Deploy to Test Environment
         command: |
-          if [ "$CIRCLE_BRANCH" == "master" ]
-          then 
-            export AWS_REGION="us-east-2"
-            export EKS_CLUSTER_NAME="testCircleCi2"
-            export DEPLOYMENT="helloworld-deployment"
-            export CONTAINER="helloworld"
-            export DOCKERHUB_ACCOUNT_NAME="geetikasharma7"
-            export REPOSITORY_NAME="hello-world"
-          fi
+          export AWS_REGION="us-east-2"
+          export EKS_CLUSTER_NAME="testCircleCi"
+          export DEPLOYMENT="helloworld-deployment"
+          export CONTAINER="helloworld"
+          export DOCKERHUB_ACCOUNT_NAME="geetikasharma7"
+          export REPOSITORY_NAME="hello-world"
           aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region us-east-2 --alias ${EKS_CLUSTER_NAME}
           kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
-    
+
 workflows:
   version: 2
   deployment:
@@ -66,3 +64,7 @@ workflows:
       - deploy:
           requires:
              - build_test_push
+          filters:
+            branches:
+              only:
+                - master
