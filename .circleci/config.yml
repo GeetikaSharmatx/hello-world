@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@0.2.7
   kubernetes: circleci/kubernetes@0.4.0
+  slack: circleci/slack@3.4.2
 jobs:
   build_test_push:
     docker:
@@ -33,7 +34,7 @@ jobs:
         name: Upgrade AWS cli
         command: sudo pip3 install --upgrade awscli
     - run:
-        name: Install and confgure kubectl
+        name: Install and configure kubectl
         command: |
             curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
             chmod +x ./kubectl
@@ -44,6 +45,10 @@ jobs:
             curl -o aws-iam-authenticator curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator
             chmod +x ./aws-iam-authenticator
             sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+    - slack/notify:
+          channel: C011D4UUJH5
+          color: '#42e2f4'
+          message: "Deploying ${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM} on Test Environment"
     - run:
         name: Deploy to Test Environment
         command: |
@@ -55,6 +60,8 @@ jobs:
           export REPOSITORY_NAME="hello-world"
           aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region us-east-2 --alias ${EKS_CLUSTER_NAME}
           kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
+    - slack/status:
+        
 
 workflows:
   version: 2
