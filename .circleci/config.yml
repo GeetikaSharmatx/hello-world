@@ -27,42 +27,43 @@ jobs:
     - image: circleci/python:3.7
     steps: 
     - run: 
-        name: Install AWS cli
-        command: sudo pip3 install awscli
-    - run:
-        name: Upgrade AWS cli
-        command: sudo pip3 install --upgrade awscli
-    - run:
-        name: Install and confgure kubectl
+        name: Setup the environment and deploy to kubernetes
         command: |
-            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            sudo mv ./kubectl /usr/local/bin/kubectl
-    - run:
-        name: Install and confgure kubectl aws-iam-authenticator
-        command: |
-            curl -o aws-iam-authenticator curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator
-            chmod +x ./aws-iam-authenticator
-            sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
-    - run:
-        name: Set kubernetes cluster variables w.r.t branch
-        command: |
-          if [ "$CIRCLE_BRANCH" == "development" ]
-          then 
-            export AWS_REGION="us-east-2"
-            export EKS_CLUSTER_NAME="testCircleCi"
-            export DEPLOYMENT="helloworld-deployment"
-            export CONTAINER="helloworld"
-            export DOCKERHUB_ACCOUNT_NAME="geetikasharma7"
-            export REPOSITORY_NAME="hello-world"
+             if [ "$CIRCLE_BRANCH" == "master" ]
+             then 
+              echo "Installing awscli"
+              sudo pip3 install awscli
+    
+              echo "Upgrade AWS cli"
+              sudo pip3 install --upgrade awscli
+    
+              echo "Install and configure kubectl"
+              curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+              chmod +x ./kubectl
+              sudo mv ./kubectl /usr/local/bin/kubectl
+    
+              echo "Install and confgure kubectl aws-iam-authenticator"
+              curl -o aws-iam-authenticator curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/aws-iam-authenticator
+              chmod +x ./aws-iam-authenticator
+              sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+    
+              echo "Set kubernetes cluster variables w.r.t branch"
+              export AWS_REGION="us-east-2"
+              export EKS_CLUSTER_NAME="testCircleCi"
+              export DEPLOYMENT="helloworld-deployment"
+              export CONTAINER="helloworld"
+              export DOCKERHUB_ACCOUNT_NAME="geetikasharma7"
+              export REPOSITORY_NAME="hello-world"
         
-            aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION} --alias ${EKS_CLUSTER_NAME}
-            kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
-          fi
+              aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION} --alias ${EKS_CLUSTER_NAME}
+              kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
+            else
+              echo "No Deployment"
+            fi
     - slack/status:
         channel: C011D4UUJH5
         include_project_field: true
-        only_for_branches: development
+        only_for_branches: master
         success_message: ':tada: ${CIRCLE_BRANCH} branch is successfully deployed'
     
 workflows:
