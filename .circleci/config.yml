@@ -47,7 +47,7 @@ jobs:
     - run:
         name: Set kubernetes cluster variables w.r.t branch
         command: |
-          if [ "$CIRCLE_BRANCH" == "master" ]
+          if [ "$CIRCLE_BRANCH" == "development" ]
           then 
             export AWS_REGION="us-east-2"
             export EKS_CLUSTER_NAME="testCircleCi"
@@ -61,7 +61,7 @@ jobs:
     - slack/status:
         channel: C011D4UUJH5
         include_project_field: true
-        only_for_branches: master, development
+        only_for_branches: master
         success_message: ':tada: ${CIRCLE_BRANCH} branch is successfully deployed'
     
 workflows:
