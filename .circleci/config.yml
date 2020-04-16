@@ -56,7 +56,7 @@ jobs:
             export DOCKERHUB_ACCOUNT_NAME="geetikasharma7"
             export REPOSITORY_NAME="hello-world"
           fi
-          aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region us-east-2 --alias ${EKS_CLUSTER_NAME}
+          aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region ${AWS_REGION} --alias ${EKS_CLUSTER_NAME}
           kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
     - slack/status:
         channel: C011D4UUJH5
