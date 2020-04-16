@@ -62,6 +62,7 @@ jobs:
         channel: C011D4UUJH5
         include_project_field: true
         only_for_branches: master, development
+        success_message: ':tada: ${CIRCLE_PROJECT_REPONAME}: ${CIRCLE_BRANCH} development has succeeded'
     
 workflows:
   version: 2
