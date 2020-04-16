@@ -29,8 +29,8 @@ jobs:
     - run: 
         name: Setup the environment and deploy to kubernetes
         command: |
-             if [ "$CIRCLE_BRANCH" == "master" ]
-             then 
+            if [ "$CIRCLE_BRANCH" == "master" ]
+            then 
               echo "Installing awscli"
               sudo pip3 install awscli
     
