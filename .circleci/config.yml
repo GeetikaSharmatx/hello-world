@@ -23,8 +23,6 @@ jobs:
         name: Push Docker Image
         command: 'if  [ "$CIRCLE_BRANCH" == "development" ] ||  [ "$CIRCLE_BRANCH" == "master" ] || [ "$CIRCLE_BRANCH" == "production" ] ; then  bash ~/project/.circleci/deploy.sh; fi'
   deploy:
-    - slack/approval-notification:
-        message: Pending approval
     docker: 
     - image: circleci/python:3.7
     steps: 
@@ -73,6 +71,8 @@ workflows:
   deployment:
     jobs:
       - build_test_push
+      - slack/approval-notification:
+        message: Pending approval
       - deploy:
           requires:
              - build_test_push
