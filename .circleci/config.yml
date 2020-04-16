@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@0.2.7
   kubernetes: circleci/kubernetes@0.4.0
+  slack: circleci/slack@3.4.2
 jobs:
   build_test_push:
     docker:
@@ -57,6 +58,10 @@ jobs:
           fi
           aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region us-east-2 --alias ${EKS_CLUSTER_NAME}
           kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
+    - slack/status:
+        channel: C011D4UUJH5
+        include_project_field: true
+        only_for_branches: master
     
 workflows:
   version: 2
