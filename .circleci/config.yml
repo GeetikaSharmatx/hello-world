@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@0.2.7
-  kubernetes: circleci/kubernetes@0.4.0  
+  kubernetes: circleci/kubernetes@0.4.0
 jobs:
   build_test_push:
     docker:
@@ -21,8 +21,7 @@ jobs:
     - run:
         name: Push Docker Image
         command: 'if  [ "$CIRCLE_BRANCH" == "development" ] ||  [ "$CIRCLE_BRANCH" == "master" ] || [ "$CIRCLE_BRANCH" == "production" ] ; then  bash ~/project/.circleci/deploy.sh; fi'
-
-  deploy_to_test_cluster:
+  deploy:
     docker: 
     - image: circleci/python:3.7
     steps: 
@@ -33,7 +32,7 @@ jobs:
         name: Upgrade AWS cli
         command: sudo pip3 install --upgrade awscli
     - run:
-        name: Install and configure kubectl
+        name: Install and confgure kubectl
         command: |
             curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
             chmod +x ./kubectl
@@ -45,26 +44,25 @@ jobs:
             chmod +x ./aws-iam-authenticator
             sudo mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
     - run:
-        name: Deploy to Test Environment
+        name: Set kubernetes cluster variables w.r.t branch
         command: |
-          export AWS_REGION="us-east-2"
-          export EKS_CLUSTER_NAME="testCircleCi"
-          export DEPLOYMENT="helloworld-deployment"
-          export CONTAINER="helloworld"
-          export DOCKERHUB_ACCOUNT_NAME="geetikasharma7"
-          export REPOSITORY_NAME="hello-world"
+          if [ "$CIRCLE_BRANCH" == "master" ]
+          then 
+            export AWS_REGION="us-east-2"
+            export EKS_CLUSTER_NAME="testCircleCi"
+            export DEPLOYMENT="helloworld-deployment"
+            export CONTAINER="helloworld"
+            export DOCKERHUB_ACCOUNT_NAME="geetikasharma7"
+            export REPOSITORY_NAME="hello-world"
+          fi
           aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME} --region us-east-2 --alias ${EKS_CLUSTER_NAME}
           kubectl set image deployment/${DEPLOYMENT} ${CONTAINER}=${DOCKERHUB_ACCOUNT_NAME}/${REPOSITORY_NAME}:${CIRCLE_BRANCH}_${CIRCLE_PREVIOUS_BUILD_NUM}
-     
+    
 workflows:
   version: 2
   deployment:
     jobs:
       - build_test_push
-      - deploy_to_test_cluster:
+      - deploy:
           requires:
              - build_test_push
-          filters:
-            branches:
-              only:
-                - development
