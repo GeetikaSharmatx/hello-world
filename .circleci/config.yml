@@ -72,7 +72,7 @@ workflows:
     jobs:
       - build_test_push
       - slack/approval-notification:
-        message: Pending approval
+          message: Pending approval
       - deploy:
           requires:
              - build_test_push
