@@ -8,14 +8,13 @@ jobs:
     environment:
     - TAG_NAME: "branch-$CIRCLE_BRANCH"
     - IMAGE_PATH: "geetikasharma7/hello-world"
-    - REDIS_PASS: ${REDIS_PASS}
     steps:
     - checkout
     - setup_remote_docker:
         docker_layer_caching: false
     - run:
         name: Testing Environment Variable
-        command: echo $REDIS_PASS > dummy.txt && cat dummy.txt
+        command: echo $REDIS_PASS 
     - run:
         name: Build Docker Image
         command: 'docker build -t $IMAGE_PATH:$CIRCLE_BUILD_NUM .'
