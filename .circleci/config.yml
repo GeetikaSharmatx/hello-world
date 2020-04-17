@@ -67,10 +67,12 @@ workflows:
       - build_test_push
       - slack/approval-notification:
           message: Pending approval
+          requires:
+            - build_test_push
       - pending-deployment:
           type: approval
           requires:
-            - build_test_push
+            - slack/approval-notification
       - deploy_to_test_cluster:
           requires:
              - pending-deployment
