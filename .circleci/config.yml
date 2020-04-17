@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   slack: circleci/slack@3.4.2
+  job-expiration: azihsoyn/job-expiration@0.1.0
 jobs:
   build_test_push:
     docker:
@@ -60,20 +61,37 @@ jobs:
         include_project_field: true
         only_for_branches: master
         success_message: ':tada: ${CIRCLE_BRANCH} branch is successfully deployed'  
+
+  send-approval-link:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - slack/notify:
+          message: |
+            Please check and approve Job to deploy.
+            https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}
+      - expiration/set:
+          ttl: 60
 workflows:
   version: 2
   deployment:
     jobs:
       - build_test_push
-      - slack/approval-notification:
-          message: Pending approval
-      - pending-deployment:
-          type: approval
+      # - slack/approval-notification:
+      #     message: Pending approval
+      - send-approval-link:
+          filters:
+            branches:
+              only: master
           requires:
             - build_test_push
+      - pending-approval:
+          type: approval
+          requires:
+            - send-approval-link
       - deploy_to_test_cluster:
           requires:
-             - pending-deployment
+             - pending-approval
           filters:
             branches:
               only:
