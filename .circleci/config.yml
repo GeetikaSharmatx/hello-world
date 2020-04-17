@@ -6,14 +6,16 @@ jobs:
     docker:
     - image: circleci/node:10.9
     environment:
-    # - SHORT_SHA: $(echo $CIRCLE_SHA1 | cut -b1-7)
     - TAG_NAME: "branch-$CIRCLE_BRANCH"
     - IMAGE_PATH: "geetikasharma7/hello-world"
-    # - KC_ADMIN_USERNAME: "circleci"
+    - REDIS_PASS: ${REDIS_PASS}
     steps:
     - checkout
     - setup_remote_docker:
         docker_layer_caching: false
+    - run:
+        name: Testing Environment Variable
+        command: echo ${REDIS_PASS}
     - run:
         name: Build Docker Image
         command: 'docker build -t $IMAGE_PATH:$CIRCLE_BUILD_NUM .'
