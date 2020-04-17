@@ -15,7 +15,7 @@ jobs:
         docker_layer_caching: false
     - run:
         name: Testing Environment Variable
-        command: echo ${REDIS_PASS}
+        command: echo $REDIS_PASS > dummy.txt && cat dummy.txt
     - run:
         name: Build Docker Image
         command: 'docker build -t $IMAGE_PATH:$CIRCLE_BUILD_NUM .'
