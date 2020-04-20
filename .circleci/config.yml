@@ -75,7 +75,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - development
       - pending-deployment:
           type: approval
           requires:
